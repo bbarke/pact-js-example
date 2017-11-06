@@ -1,0 +1,22 @@
+{
+  "name": "js-no-failure-example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "client-spec.js",
+  "scripts": {
+    "test": "karma start"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "karma": "^1.7.1"
+  },
+  "devDependencies": {
+    "@pact-foundation/karma-pact": "^2.1.1",
+    "jasmine": "^2.8.0",
+    "karma-jasmine": "^1.1.0",
+    "karma-phantomjs-launcher": "^1.0.4",
+    "pact": "^4.2.1",
+    "pact-web": "^4.2.1"
+  }
+}
