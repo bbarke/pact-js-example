@@ -200,25 +200,15 @@
 
         it("returns an error message", function (done) {
           //Run the tests
-          client.unfriendMe().then(function() {
-            done(new Error('expected request to /unfriend me to fail'))
-          }, function(e) {
-            expect(e.status).toEqual(404);
-            expect(JSON.parse(e.responseText).error).toEqual('No friends :(')
-            done()
-          })
-
-        });
-
-        // verify with Pact, and reset expectations
-        it('successfully verifies', function(done) {
-          provider.verify()
-            .then(function(a) {
-              done()
+          client.unfriendMe()
+            .then(function() {
+              done(new Error('expected request to /unfriend me to fail'))
             }, function(e) {
-              done.fail(e)
+              expect(e.status).toEqual(404);
+              expect(JSON.parse(e.responseText).error).toEqual('No friends :(')
+              provider.verify().then(done, done.fail)
             })
-        })
+        });
       })
     })
 
