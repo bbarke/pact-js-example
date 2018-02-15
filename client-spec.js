@@ -3,27 +3,35 @@
 
   describe("Client", function() {
 
-    var client, provider;
+    var client, pactWeb, matcher;
 
     beforeAll(function(done) {
-      client = example.createClient('http://localhost:1234')
-      provider = Pact({ consumer: 'Karma Jasmine', provider: 'Hello' })
+      console.log('Before All');
+      client = example.createClient('http://localhost:1234');
+      pactWeb = new Pact.PactWeb({
+          consumer: 'Karma Jasmine',
+          provider: 'Hello',
+          port: 1234,
+          host: 'localhost'
+      });
+
+      matcher = Pact.Matchers;
 
       // required for slower Travis CI environment
-      setTimeout(function () { done() }, 2000)
+      setTimeout(function () { done() }, 2000);
 
       // Required if run with `singleRun: false`
-      provider.removeInteractions()
+      pactWeb.removeInteractions()
     });
 
     afterAll(function (done) {
-      provider.finalize()
+      pactWeb.finalize()
         .then(function () { done() }, function (err) { done.fail(err) })
     });
 
     describe("sayHello", function () {
       beforeAll(function (done) {
-        provider.addInteraction({
+        pactWeb.addInteraction({
           uponReceiving: 'a request for hello',
           withRequest: {
             method: 'GET',
@@ -32,7 +40,11 @@
           willRespondWith: {
             status: 200,
             headers: { "Content-Type": "application/json" },
-            body: { reply: "Hello" }
+            body: { reply: matcher.term({
+	            generate: "Hello",
+	            matcher: ".*"
+            })
+            }
           }
         })
         .then(function () { done() }, function (err) { done.fail(err) })
@@ -42,7 +54,7 @@
         //Run the tests
         client.sayHello()
           .then(function (data) {
-            expect(JSON.parse(data.responseText)).toEqual({ reply: "Hello" })
+            expect(JSON.parse(data.responseText)).toEqual({ reply: "Hello" });
             done()
           })
           .catch(function (err) {
@@ -52,7 +64,7 @@
 
       // verify with Pact, and reset expectations
       it('successfully verifies', function(done) {
-        provider.verify()
+        pactWeb.verify()
           .then(function(a) {
             done()
           }, function(e) {
@@ -61,10 +73,11 @@
       })
     });
 
+    /*
     describe("findFriendsByAgeAndChildren", function () {
 
       beforeAll(function (done) {
-      provider
+      pactWeb
           .addInteraction({
             uponReceiving: 'a request friends',
             withRequest: {
@@ -104,7 +117,7 @@
       // verify with Pact, and reset expectations
       // verify with Pact, and reset expectations
       it('successfully verifies', function(done) {
-        provider.verify()
+        pactWeb.verify()
           .then(function(a) {
             done()
           }, function(e) {
@@ -116,14 +129,14 @@
     describe("unfriendMe", function () {
 
       afterEach(function () {
-        return provider.removeInteractions()
+        return pactWeb.removeInteractions()
       });
 
       describe("when I have some friends", function () {
 
         beforeAll(function (done) {
           //Add interaction
-          provider.addInteraction({
+          pactWeb.addInteraction({
             state: 'I am friends with Fred',
             uponReceiving: 'a request to unfriend',
             withRequest: {
@@ -153,7 +166,7 @@
 
         // verify with Pact, and reset expectations
         it('successfully verifies', function(done) {
-          provider.verify()
+          pactWeb.verify()
             .then(function(a) {
               done()
             }, function(e) {
@@ -166,7 +179,7 @@
       describe("when there are no friends", function () {
         beforeAll(function (done) {
           //Add interaction
-          provider.addInteraction({
+          pactWeb.addInteraction({
             state: 'I have no friends',
             uponReceiving: 'a request to unfriend',
             withRequest: {
@@ -183,7 +196,7 @@
 
         beforeAll(function (done) {
             //Add bad interaction
-            provider.addInteraction({
+            pactWeb.addInteraction({
                 state: 'Add extra interaction - THIS SHOULD CAUSE THE TEST TO FAIL',
                 uponReceiving: 'nothing',
                 withRequest: {
@@ -212,7 +225,7 @@
 
         // verify with Pact, and reset expectations
         it('successfully verifies', function(done) {
-          provider.verify()
+          pactWeb.verify()
             .then(function(a) {
               done()
             }, function(e) {
@@ -221,6 +234,6 @@
         })
       })
     })
-
+    */
   })
 })();

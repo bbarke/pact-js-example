@@ -14,20 +14,21 @@ module.exports = function (config) {
 			port: 1234,
 			consumer: "some-consumer",
 			provider: "some-provider",
-			dir: "pact/files/go/here",
-			log: "log/files/go/here"
+			dir: "pact/",
+			log: "../../../pact/pact.log",
+			logLevel: 'DEBUG'
 		}],
 		// ensure Pact and default karma plugins are loaded
 		plugins: [
 			'karma-*',
-			'@pact-foundation/karma-pact',
+			'@pact-foundation/karma-pact'
 		],
 
 		// list of files / patterns to load in the browser
 		files: [
 			// '../../dist/pact-web.js',
 			// Example Using NPM package
-			'node_modules/pact-web/pact-web.js',
+			'node_modules/@pact-foundation/pact-web/pact-web.js',
 			'client.js',
 			'client-spec.js'
 		],
